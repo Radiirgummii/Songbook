@@ -3,6 +3,7 @@
 # songbook
 ## Dependecies:
 - python-fpdf
+- loguro
 ## use
 run the script with the command "python main.py"
 ## Songs
