@@ -2,8 +2,8 @@
 
 # songbook
 ## Dependecies:
-- python-fpdf
-- loguro
+- python-fpdf2
+- python-loguro
 ## use
 run the script with the command "python main.py"
 ## Songs
