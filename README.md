@@ -1,6 +1,5 @@
 # Songbook
 
-# songbook
 ## Dependecies:
 - python-fpdf2
 - python-loguro
