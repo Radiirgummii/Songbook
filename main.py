@@ -2,6 +2,7 @@ from fpdf import FPDF
 import json
 from loguru import logger as log
 import sys
+from os import listdir
 
 def decode_lines(line: str):
     """Recusively splits the string into line_par and chords"""
@@ -76,13 +77,11 @@ class Songbook:
 if __name__ == "__main__":
     songbook = Songbook("Ameisenliederbuch")
     songbook.add_title_page()
-    with open("/home/user/repos/songbook/Songs/0.2/songs.json", "r") as f:
-        data = json.load(f)
-    songbook.pdf.add_page()
-    songbook.add_song(
-        "Butter Bei Die Fische",
-        data["songs"]["Butter Bei Die Fische"]["meta"]["artist"],
-        data["songs"]["Butter Bei Die Fische"]["txt"],
-        data["songs"]["Butter Bei Die Fische"]["scheme"],
-    )
+    path = "/home/user/repos/songbook/Songs/1.0/"
+    files = listdir(path)
+    log.debug(files)
+    for file in files:
+        with open(path + file, "r") as f:
+            song = json.load(f)
+        songbook.add_song(song["meta"]["title"], song["meta"]["artist"], song["verses"], song["scheme"])
     songbook.output("tmp_test.pdf")
