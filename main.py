@@ -3,6 +3,8 @@ import json
 from loguru import logger as log
 import sys
 from os import listdir
+log.remove()
+log.add(sys.stderr, level="INFO")
 
 def decode_lines(line: str):
     """Recusively splits the string into line_par and chords"""
@@ -21,16 +23,17 @@ class Songbook:
         self.title = title
         self.pdf = FPDF()
 
+
     def add_title_page(self):
         self.pdf.add_page()
         self.pdf.set_font("times", "", 60)
         self.pdf.cell(0, 10, self.title, align="C")
-        log.info(f"added Title Page with Title:{self.title}")
+        log.info(f"added Title Page with Title: {self.title}")
     def add_filler_page(self):
         log.info("added filler page")
         self.pdf.add_page()
-
     def add_song(self, title: str, artist: str, verses: dict, scheme: list):
+        log.info(f"adding song {title} on page {self.pdf.page_no()}")
         height = 20
         for verse in scheme:
             height += verses[verse].count("%") * 9 + 9
@@ -60,10 +63,10 @@ class Songbook:
             self.pdf.set_font("times", size=14)
             final_text = ""
             for line_part, chord in zip(line_parts, chords):
-                self.pdf.x += self.pdf.get_string_width(line_part)
+                final_text += line_part
+                self.pdf.x = 10 + self.pdf.get_string_width(final_text)
                 self.pdf.cell(10,4, text=chord)
                 self.pdf.x -= 10
-                final_text += line_part
             final_text += line_parts[-1]
             self.pdf.ln()
             self.pdf.cell(0,5,text=final_text)
