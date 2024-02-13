@@ -80,11 +80,12 @@ class Songbook:
 if __name__ == "__main__":
     songbook = Songbook("Ameisenliederbuch")
     songbook.add_title_page()
-    path = "/home/user/repos/songbook/Songs/1.0/"
-    files = listdir(path)
+    DATAFILE_PATH = "/home/user/repos/songbook/Songs/1.0/"
+    files = listdir(DATAFILE_PATH)
     log.debug(files)
+    files.sort()
     for file in files:
-        with open(path + file, "r") as f:
+        with open(DATAFILE_PATH + file, "r") as f:
             song = json.load(f)
         songbook.add_song(song["meta"]["title"], song["meta"]["artist"], song["verses"], song["scheme"])
     songbook.output("tmp_test.pdf")
