@@ -6,6 +6,8 @@ __pycache__/
 
 # temprary files
 tmp*
+# settings file
+settings.json
 # C extensions
 *.so
 

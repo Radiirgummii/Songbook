@@ -19,14 +19,16 @@ def decode_lines(line: str):
         return [line], []
 
 class Songbook:
-    def __init__(self, title: str):
+    def __init__(self, title: str, font: str="DunbarLow-Light"):
         self.title = title
         self.pdf = FPDF()
+        self.font = font
+        self.pdf.add_font("Dunbar","",font)
 
 
     def add_title_page(self):
         self.pdf.add_page()
-        self.pdf.set_font("times", "", 60)
+        self.pdf.set_font(self.font, "", 60)
         self.pdf.cell(0, 10, self.title, align="C")
         log.info(f"added Title Page with Title: {self.title}")
     def add_filler_page(self):
@@ -42,7 +44,7 @@ class Songbook:
         if height > self.pdf.eph and self.pdf.page_no() % 2 == 0:
             self.add_filler_page()
         self.pdf.add_page()
-        self.pdf.set_font("times", "", 40)
+        self.pdf.set_font(self.font, "", 40)
         self.pdf.cell(0, 10, title,)
         self.pdf.ln()
         log.debug(f"added title of {title}")
@@ -60,7 +62,7 @@ class Songbook:
         for line in lines:
             line_parts, chords = decode_lines(line)
             log.debug(f"{chords = } {line_parts = }")
-            self.pdf.set_font("times", size=14)
+            self.pdf.set_font(self.font, size=14)
             final_text = ""
             for line_part, chord in zip(line_parts, chords):
                 final_text += line_part
@@ -77,15 +79,21 @@ class Songbook:
         self.pdf.output(name)
 
 
-if __name__ == "__main__":
-    songbook = Songbook("Ameisenliederbuch")
+
+
+def main():
+    with open("settings.json", "r") as f:
+        settings = json.load(f)
+    songbook = Songbook(settings["generator_settings"]["title"])
     songbook.add_title_page()
-    DATAFILE_PATH = "/home/user/repos/songbook/Songs/1.0/"
-    files = listdir(DATAFILE_PATH)
+    files = listdir(settings["generator_settings"]["input_path"])
     log.debug(files)
     files.sort()
     for file in files:
-        with open(DATAFILE_PATH + file, "r") as f:
+        with open(settings["generator_settings"]["input_path"] + file, "r") as f:
             song = json.load(f)
         songbook.add_song(song["meta"]["title"], song["meta"]["artist"], song["verses"], song["scheme"])
-    songbook.output("tmp_test.pdf")
+    songbook.output(settings["generator_settings"]["output_path"])
+
+if __name__ == "__main__":
+    main()

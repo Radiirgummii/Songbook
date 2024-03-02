@@ -1,7 +1,7 @@
 {
-    "generator settings": {
+    "generator_settings": {
         "title":"Songbook",
-        "input_path":"path/to/input/directory",
-        "output_path":"path/to/output_file.pdf"
+        "input_path":"/home/user/repos/songbook/Songs/1.0/",
+        "output_path":"./tmp_test.pdf"
     }
 }
