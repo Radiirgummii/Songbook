@@ -19,11 +19,11 @@ def decode_lines(line: str):
         return [line], []
 
 class Songbook:
-    def __init__(self, title: str, font: str="DunbarLow-Light"):
+    def __init__(self, title: str, font: str="helvetica"):
         self.title = title
+        self.index = {}
         self.pdf = FPDF()
         self.font = font
-        self.pdf.add_font("Dunbar","",font)
 
 
     def add_title_page(self):
@@ -35,7 +35,6 @@ class Songbook:
         log.info("added filler page")
         self.pdf.add_page()
     def add_song(self, title: str, artist: str, verses: dict, scheme: list):
-        log.info(f"adding song {title} on page {self.pdf.page_no()}")
         height = 20
         for verse in scheme:
             height += verses[verse].count("%") * 9 + 9
@@ -43,8 +42,10 @@ class Songbook:
         
         if height > self.pdf.eph and self.pdf.page_no() % 2 == 0:
             self.add_filler_page()
+        log.info(f"adding song {title} on page {self.pdf.page_no()}")
+        self.index[title] = self.pdf.page_no()
         self.pdf.add_page()
-        self.pdf.set_font(self.font, "", 40)
+        self.pdf.set_font(self.font, "", 30)
         self.pdf.cell(0, 10, title,)
         self.pdf.ln()
         log.debug(f"added title of {title}")
@@ -73,6 +74,16 @@ class Songbook:
             self.pdf.ln()
             self.pdf.cell(0,5,text=final_text)
             self.pdf.ln()
+    def add_index(self):
+        self.pdf.add_page()
+        with self.pdf.table() as table:
+            row = table.row()
+            row.cell("Song")
+            row.cell("Page")
+            for song, page in self.index.items():
+                row = table.row()
+                row.cell(song)
+                row.cell(str(page))
 
             
     def output(self, name: str):
@@ -93,6 +104,7 @@ def main():
         with open(settings["generator_settings"]["input_path"] + file, "r") as f:
             song = json.load(f)
         songbook.add_song(song["meta"]["title"], song["meta"]["artist"], song["verses"], song["scheme"])
+    songbook.add_index()
     songbook.output(settings["generator_settings"]["output_path"])
 
 if __name__ == "__main__":
