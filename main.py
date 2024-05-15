@@ -4,7 +4,7 @@ from loguru import logger as log
 import sys
 from os import listdir
 
-def decode_lines(line: str):
+def decode_lines(line: str) -> tuple[list[str], list[str]]:
     """Recusively splits the string into line_par and chords"""
     if "{" in line or "}" in line:
         splitted_line = line.rsplit("}",1)
@@ -21,16 +21,16 @@ class Songbook:
         self.title = title
         self.pdf = FPDF()
 
-    def add_title_page(self):
+    def add_title_page(self) -> None:
         self.pdf.add_page()
         self.pdf.set_font("times", "", 60)
         self.pdf.cell(0, 10, self.title, align="C")
         log.info(f"added Title Page with Title:{self.title}")
-    def add_filler_page(self):
+    def add_filler_page(self) -> None:
         log.info("added filler page")
         self.pdf.add_page()
 
-    def add_song(self, title: str, artist: str, verses: dict, scheme: list):
+    def add_song(self, title: str, artist: str, verses: dict[str,str], scheme: list[str]) -> None:
         height = 20
         for verse in scheme:
             height += verses[verse].count("%") * 9 + 9
@@ -50,7 +50,7 @@ class Songbook:
         log.debug(f"verses:{scheme}")
         for verse in scheme:
             self.add_verse(verses[verse])
-    def add_verse(self, verse: str):
+    def add_verse(self, verse: str) -> None:
         lines = verse.split("%")
         if self.pdf.get_y() + len(lines) * 9 > self.pdf.eph:
             self.pdf.add_page()
@@ -70,7 +70,7 @@ class Songbook:
             self.pdf.ln()
 
             
-    def output(self, name: str):
+    def output(self, name: str) -> None:
         self.pdf.output(name)
 
 
